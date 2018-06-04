@@ -1,15 +1,7 @@
 <?php
 /*Оригинальный скрипт для приложения поиска турников "Turnichok"*/
 
-$config = array(
-		'sqlhost' => 'localhost',
-		'sqlusername' => '',
-		'sqlpass' => '',
-		'sqldb' => '',
-		'sqlprefix' => 'HB_',
-
-		'adminPass' => '12345'
-);
+include_once('config.php');
 
 //Подключаемся к базе
 $mysqli = mysqli_connect($config['sqlhost'], $config['sqlusername'], $config['sqlpass'], $config['sqldb'])or DIE('Error: ' . mysqli_error($mysqli));
@@ -32,8 +24,8 @@ function addHBar($adminpass, $latitude, $longitude, $description, $imgs = '') {
 		$longitude = mysqli_real_escape_string($mysqli, $longitude);
 		$description = mysqli_real_escape_string($mysqli, $description);
 		$imgs = mysqli_real_escape_string($mysqli, $imgs);
-		$q = "INSERT INTO `".$config['sqlprefix']."hBars`(`latitude`, `longitude`, `description`, `imgs`) VALUES (".$latitude.",".$longitude.",'".$description."','".$imgs."'')";
-		mysqli_query($mysqli, $q);
+		$q = "INSERT INTO `".$config['sqlprefix']."hBars`(`latitude`, `longitude`, `description`, `imgs`) VALUES (".$latitude.",".$longitude.",'".$description."','".$imgs."')";
+		mysqli_query($mysqli, $q)or DIE('OH NO! I did not want to kill him : '.mysqli_error($mysqli));
 		return 'Success!';
 	}
 
@@ -49,7 +41,7 @@ function getHBars($latitude = 0, $longitude = 0) {
 		$q = "SELECT * FROM `".$config['sqlprefix']."hBars`";
 		$resq = mysqli_query($mysqli, $q)or DIE('Error: ' . mysqli_error($mysqli));
 		$result = array();
-		while($res = mysqli_fetch_array($resq)) {
+		while($res = mysqli_fetch_assoc($resq)) {
 			$result[] = $res;
 		}
 		return json_encode($result);
