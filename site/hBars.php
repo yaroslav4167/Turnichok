@@ -15,7 +15,7 @@ if(isset($_REQUEST['get'])) {
 }
 
 if(isset($_REQUEST['del'])) {
-	echo removeHBar(@$_REQUEST['id']);
+	echo removeHBar($_REQUEST['id'], $_REQUEST['adminpass']);
 }
 
 //Добавление турников
@@ -57,11 +57,20 @@ function getHBars($latitude = 0, $longitude = 0) {
 	}
 }
 
-function removeHBar($id) {
+function removeHBar($id, $adminpass) {
 	global $mysqli, $config;
-	$id = mysqli_real_escape_string($mysqli, $id);
-	$q = "DELETE FROM `".$config['sqlprefix']."hBars` WHERE `id` = ".$id;
-	mysqli_query($mysqli, $q)or DIE('OH NO! I did not want to kill him : '.mysqli_error($mysqli));
-	return 'Success!';
+	if($adminpass != $config['adminPass']) {
+		return 'Wrong pass!';
+	} else {
+		$id = mysqli_real_escape_string($mysqli, $id);
+		$q = "SELECT * FROM `".$config['sqlprefix']."hBars` WHERE `id`=".$id;
+		if(mysqli_num_rows(mysqli_query($mysqli, $q)) != 0) {
+			$q = "DELETE FROM `".$config['sqlprefix']."hBars` WHERE `id` = ".$id;
+			mysqli_query($mysqli, $q)or DIE('OH NO! I did not want to kill him : '.mysqli_error($mysqli));
+			return 'Success!';
+		} else {
+			return 'Null';
+		}
+	}
 }
 ?>
