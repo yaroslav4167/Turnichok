@@ -5,6 +5,7 @@ include_once('config.php');
 
 //Подключаемся к базе
 $mysqli = mysqli_connect($config['sqlhost'], $config['sqlusername'], $config['sqlpass'], $config['sqldb'])or DIE('Error: ' . mysqli_error($mysqli));
+mysqli_set_charset($mysqli, "utf8");
 
 if(isset($_REQUEST['add'])) {
 	echo addHBar($_REQUEST['adminpass'], $_REQUEST['latitude'], $_REQUEST['longitude'], $_REQUEST['description'], @$_REQUEST['imgs']);
@@ -17,6 +18,7 @@ if(isset($_REQUEST['get'])) {
 if(isset($_REQUEST['del'])) {
 	echo removeHBar($_REQUEST['id'], $_REQUEST['adminpass']);
 }
+mysqli_close($mysqli);
 
 //Добавление турников
 function addHBar($adminpass, $latitude, $longitude, $description, $imgs = '') {
@@ -53,7 +55,7 @@ function getHBars($latitude = 0, $longitude = 0) {
 		while($res = mysqli_fetch_assoc($resq)) {
 			$result[] = $res;
 		}
-		return json_encode($result);
+		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 }
 
